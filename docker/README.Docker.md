@@ -1,7 +1,16 @@
-### First build and run container
-0. If you are unfamiliar with Docker, please start by watching this YouTube video: [Docker Short Tutorial](https://youtu.be/DQdB7wFEygo?si=kHUkx7uFuL76zd9X). 
-    Install docker using the instructions from that video (you might need to restart your computer after installing docker dekstop). In a terminal, run: `docker --version`.
-    It should give you something like: `Docker version xx.x.x`
+# Getting Started
+> If you are unfamiliar with Docker, please start by watching this YouTube video: [Docker Short Tutorial](https://youtu.be/DQdB7wFEygo?si=kHUkx7uFuL76zd9X). 
+
+### Download and install Docker if you have not already. 
+1) Download Docker Desktop for your OS here (same link as in the video): [Docker Dekstop Download](https://www.docker.com/products/docker-desktop/?utm_campaign=2024-12-12-docker-desktop-the-coding-sloth&utm_medium=video&utm_source=youtube). 
+2) Install Docker Desktop
+    >WINDOWS USERS: if prompted, leave the WSL 2 Recommended option ticked.
+3) Restart your laptop after installation.
+4) Check if docker is installed properly. Open a terminal and run: `docker --version`.
+It should give you something like: `Docker version xx.x.x`
+
+### First build and running ROS container
+> NOTE: Only has been tested on Windows, but should work on any OS as long as you installed docker properly.
 
 1. Start docker dekstop. Even though we will be using docker CLI, we need to start docker dekstop to start the docker engine (daemon).
 
@@ -9,11 +18,11 @@
     `docker compose build` 
     You only need to rebuild docker if anything changes in `./Dockerfile` and `../docker-compose.yaml`
 
-    You should get this message once it's built successfully:
-```bash
-[+] build 1/1
-✔ Image ros2-dev:latest Built 
-```
+    You should get something like this message once it's built successfully:
+    ```bash
+    [+] build 1/1
+    ✔ Image ros2-dev:latest Built 
+    ```
 
 3. Start the container. Run:    
     `docker compose up -d`.        
