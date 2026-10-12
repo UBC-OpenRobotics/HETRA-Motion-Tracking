@@ -22,15 +22,14 @@
     The compose file defines two services, so you get two containers:
     - ros is your ROS 2 Humble environment. This is where you run ``docker compose exec ros bash`` and where your code builds and runs.
     - novnc is a small virtual screen that shows the windows of GUI tools like turtlesim, rviz2, and rqt in your browser at http://localhost:8080/vnc.html. It runs as its own container so the display works the same on Windows, Mac, and Linux. Without this, any ros application with a GUI won't run.
+  
+4. Start browser GUI. Go to your browser and paste this into the search bar: ``http://localhost:8080/vnc.html``. Click connect. All ROS GUIs (e.g., turtlesim in the tutorials) will be displayed here.
 
-4. Go into your container's terminal. This is where you can run ros2 commands (because ros2 is installed only inside your container, not your host machine!). In your host terminal, run:
+5. Go into your container's terminal. This is where you can run ros2 commands (because ros2 is installed only inside your container, not your host machine!). In your host terminal, run:
     `docker compose exec ros bash`.
-
     When you want to exit the ros terminal, just run: `exit`.
 
-5. Start browser GUI. Go to your browser and paste this into the search bar: ``http://localhost:8080/vnc.html``. Click connect.
-
-6. Learn ROS2 :) Start here: [ROS2 First Tutorial](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Introducing-Turtlesim/Introducing-Turtlesim.html)
+6. Learn ROS2 :) Refer to the ROS2 resources listed in the phase 0 onboarding doc: [Onboarding](https://docs.google.com/document/d/1EkpDvBz-uiHoi91budrgQph44r0hXv3dEWwY77InUGM/edit?tab=t.0)
 
     A few notes:
     - I have put in turtlesim, RQT, and RVIZ inside the Dockerfile, so they are installed in your ros container already.
