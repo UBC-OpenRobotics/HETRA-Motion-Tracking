@@ -26,7 +26,7 @@
 4. Go into your container's terminal. This is where you can run ros2 commands (because ros2 is installed only inside your container, not your host machine!). In your host terminal, run:
     `docker compose exec ros bash`.
 
-When you want to exit the ros terminal, just run: `exit`.
+    When you want to exit the ros terminal, just run: `exit`.
 
 5. Start browser GUI. Go to your browser and paste this into the search bar: ``http://localhost:8080/vnc.html``. Click connect.
 
@@ -34,6 +34,7 @@ When you want to exit the ros terminal, just run: `exit`.
 
     A few notes:
     - I have put in turtlesim, RQT, and RVIZ inside the Dockerfile, so they are installed in your ros container already.
+    - I have made a shell script so that you don't need to source ros everytime you open a terminal inside your container.
     - For EVERY GUI used (turtlesim, RQT, RVIZ), open the GUI browser page to see the actual interface. I recommend using split screen like this.
     ![alt text](gui_splitscreen.png)
     - When you want to make your own nodes, launch files, or anything that you want to run inside the container, put them under `../ros2_ws/src`. 
