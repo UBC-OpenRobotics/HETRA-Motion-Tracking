@@ -1,0 +1,57 @@
+services:
+  ros:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        ROS_DISTRO: humble                 # change here to switch distro
+        USER_UID: ${USER_UID:-1000}
+        USER_GID: ${USER_GID:-1000}
+    image: ros2-dev:latest
+    init: true
+    tty: true
+    stdin_open: true
+    command: sleep infinity                # keep the container alive; open terminals with `docker compose exec ros bash`
+    environment:
+      # GUI apps (rviz2, rqt, turtlesim) draw on the novnc container's virtual display
+      - DISPLAY=novnc:0.0
+      - QT_X11_NO_MITSHM=1
+      - LIBGL_ALWAYS_SOFTWARE=1            # no GPU in the virtual display, so render in software
+    volumes:
+      # Only src/ comes from your machine. build/install/log live in Docker volumes,
+      # which keeps colcon fast on Windows/macOS and keeps your repo clean.
+      - ./ros2_ws/src:/home/ros/ros2_ws/src
+      - ros_build:/home/ros/ros2_ws/build
+      - ros_install:/home/ros/ros2_ws/install
+      - ros_log:/home/ros/ros2_ws/log
+    depends_on:
+      - novnc
+    networks:
+      - ros_net
+    # --- Linux hosts only, for later when you plug in the ESP32 / USB camera ---
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0
+    #   - /dev/video0:/dev/video0
+    # group_add:
+    #   - dialout
+    #   - video
+
+  novnc:
+    image: theasp/novnc:latest
+    environment:
+      - DISPLAY_WIDTH=1600
+      - DISPLAY_HEIGHT=900
+      - RUN_XTERM=no
+    ports:
+      # bound to localhost only, since this display has no password
+      - "127.0.0.1:${NOVNC_PORT:-8080}:8080"
+    networks:
+      - ros_net
+
+networks:
+  ros_net:
+
+volumes:
+  ros_build:
+  ros_install:
+  ros_log:
