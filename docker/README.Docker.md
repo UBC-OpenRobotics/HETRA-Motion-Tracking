@@ -12,8 +12,11 @@ It should give you something like: `Docker version xx.x.x`
 ### First build and running ROS container
 > NOTE: Only has been tested on Windows, but should work on any OS as long as you installed docker properly.
 
-1. Start docker dekstop. Even though we will be using docker CLI, we need to start docker dekstop to start the docker engine (daemon).
+0. In your terminal, clone the repository and navigate into the project directory:
+    `cd HETRA-Motion-Tracking`
 
+1. Start docker dekstop. Even though we will be using docker CLI, we need to start docker dekstop to start the docker engine (daemon).
+  
 2. Build image, first build is large and takes a while. In a terminal, run:
     `docker compose build` 
     You only need to rebuild docker if anything changes in `./Dockerfile` and `../docker-compose.yaml`
