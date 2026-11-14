@@ -1,0 +1,20 @@
+# Multi-marker demo: one 2x2 board (ids 0, 1, 2, 3) taped upright on a wall.
+# Board centre = world origin, world z up, board faces -y (same convention as marker_map.yaml).
+#
+# Print it on letter paper (fits at ~8 cm markers):
+#   python ros2_ws/src/hetra_pnp/scripts/make_marker.py --board 0 1 2 3
+# Then MEASURE one black square and the white gap between two squares and fix the numbers
+# below (the default print has gap = 0.25 x marker size).
+#
+# Launch with:
+#   ros2 launch hetra_pnp pnp.launch.py marker_map_file:=$(ros2 pkg prefix hetra_pnp)/share/hetra_pnp/config/marker_map_board.yaml
+
+dictionary: DICT_6X6_250
+
+boards:
+  - name: demo_board
+    ids: [0, 1, 2, 3]        # [top-left, top-right, bottom-left, bottom-right] as printed
+    marker_size: 0.08        # m, black square edge
+    gap: 0.02                # m, white space between neighbouring squares
+    position: [0.0, 0.0, 0.0]
+    rpy_deg: [90.0, 0.0, 0.0]

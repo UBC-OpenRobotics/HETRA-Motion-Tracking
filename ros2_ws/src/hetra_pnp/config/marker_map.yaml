@@ -1,0 +1,48 @@
+# Marker map: where every fiducial sits in the `world` frame.
+#
+# World frame convention: z points UP (gravity is -z). The pnp_node param `world_up`
+# must match this; it is what the IMU gravity check compares against.
+#
+# Marker frame: origin at the centre of the black square, x right, y up (as printed),
+# z out of the printed face (toward the camera).
+#
+# Pose of a marker/board: `position` [m] + either `rpy_deg` [roll, pitch, yaw]
+# (fixed axes, R = Rz(yaw) Ry(pitch) Rx(roll)) or `quaternion` [x, y, z, w].
+#   rpy_deg [90, 0, 0]   -> on a wall, facing -y   (stand at -y to see it)
+#   rpy_deg [90, 0, 90]  -> on a wall, facing +x
+#   rpy_deg [0, 0, 0]    -> flat on the floor/table, facing up
+#
+# `size` / `marker_size` = edge of the BLACK square in metres. Measure the print!
+#
+# Default below = P1 single-marker setup: marker 0 taped upright on a wall, its centre
+# is the world origin. Add more markers / boards as the layout is decided.
+
+dictionary: DICT_6X6_250          # e.g. DICT_APRILTAG_36h11 later; must match the printed tags
+default_marker_size: 0.05
+
+markers:
+  - id: 0
+    size: 0.05
+    position: [0.0, 0.0, 0.0]
+    rpy_deg: [90.0, 0.0, 0.0]
+
+# Example multi-marker layout (uncomment and measure):
+#  - id: 1
+#    size: 0.15
+#    position: [0.40, 0.0, 0.0]
+#    rpy_deg: [90.0, 0.0, 0.0]
+#  - id: 2
+#    size: 0.15
+#    position: [-0.8, -0.6, 0.0]
+#    rpy_deg: [90.0, 0.0, 90.0]
+
+# 2x2 boards: ids listed as [top-left, top-right, bottom-left, bottom-right] seen from
+# the front; `gap` = white space between neighbouring black squares. Generate with
+#   python3 scripts/make_marker.py --board 10 11 12 13
+boards: []
+#  - name: floor_front
+#    ids: [10, 11, 12, 13]
+#    marker_size: 0.08
+#    gap: 0.02
+#    position: [0.0, -0.5, -0.6]
+#    rpy_deg: [0.0, 0.0, 0.0]
