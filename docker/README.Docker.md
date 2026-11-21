@@ -53,6 +53,9 @@ It should give you something like: `Docker version xx.x.x`
 7. When you are done for the day and want to close the container, exit your ros terminal so that you're in your host terminal instead. Then, run:
     `docker compose down --remove--orphans`
 
+# Using the RealSense camera
+To use the RealSense camera inside the container on Windows, follow [README.USBIP.md](README.USBIP.md).
+
 # Other useful commands:
 `docker ps` -> list all containers running
 

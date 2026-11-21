@@ -26,6 +26,10 @@ services:
       - ros_install:/home/ros/ros2_ws/install
       - ros_log:/home/ros/ros2_ws/log
       - /dev:/dev
+    # /dev is mounted from Docker's VM, but the container runs as the non-root 'ros' user.
+    # Camera nodes (/dev/video*) are root:video with mode 660, so 'ros' needs the video group.
+    group_add:
+      - video
     depends_on:
       - novnc
     networks:
