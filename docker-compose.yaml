@@ -10,7 +10,8 @@ services:
     image: ros2-dev:latest
     init: true
     tty: true
-    stdin_open: true
+    stdin_open: true                       # access to USB devices
+    privileged: true
     command: sleep infinity                # keep the container alive; open terminals with `docker compose exec ros bash`
     environment:
       # GUI apps (rviz2, rqt, turtlesim) draw on the novnc container's virtual display
@@ -24,6 +25,7 @@ services:
       - ros_build:/home/ros/ros2_ws/build
       - ros_install:/home/ros/ros2_ws/install
       - ros_log:/home/ros/ros2_ws/log
+      - /dev:/dev
     depends_on:
       - novnc
     networks:
