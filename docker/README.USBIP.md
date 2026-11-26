@@ -66,26 +66,36 @@ When you're done working with the camera, press `Ctrl+C` in the attach window an
 
     You should see the camera name and serial number. If the command isn't found, run `ls /dev/video*` instead. You should see several `/dev/videoX` entries.
 
-3. Launch the realsense camera launch file:
+3. Build the workspace and load it into this terminal:
+
+    ```bash
+    cd ~/ros2_ws
+    colcon build --packages-select marker_tracking
+    source install/setup.bash
+    ```
+
+    You only need to rebuild the first time, and again after you change anything in `marker_tracking`, including `config/realsense_params.yaml` and the launch file. ROS runs the installed copy in `install/`, not the files in `src/`, so an edit without a rebuild has no effect. You do need `source install/setup.bash` in every new terminal.
+
+4. Launch the realsense camera launch file:
 
     ```bash
     ros2 launch marker_tracking realsense_camera.launch.py
     ```
 
-4. In a second container terminal, check that images are arriving:
+5. In a second container terminal, check that images are arriving:
 
     ```bash
     ros2 topic list            # should include /camera/camera/color/image_raw
     ros2 topic hz /camera/camera/color/image_raw
     ```
 
-5. To look at the frames/image, run rviz and open the display at http://localhost:8080/vnc.html
+6. To look at the frames/image, run rviz and open the display at http://localhost:8080/vnc.html
     ```
     rviz2
     ```
 
-6. Set the **fixed frame** to **camera_color_frame**
-7. **Add Display**: click Add -> By topic tab -> /camera -> /camera -> /color -> image_raw -> choose Image and click OK. You should see a new display in the bottom left corner.
+7. Set the **fixed frame** to **camera_color_frame**
+8. **Add Display**: click Add -> By topic tab -> /camera -> /camera -> /color -> image_raw -> choose Image and click OK. You should see a new display in the bottom left corner.
 ---
 
 ## Common issues
@@ -104,6 +114,6 @@ When you're done working with the camera, press `Ctrl+C` in the attach window an
 
 - **`rs-enumerate-devices` finds nothing, but the attach worked.** Restart the ROS container with `docker compose restart ros`. The camera has to be attached before the container starts.
 
-- **"Frames didn't arrive within 5 seconds" or dropped frames.** USB/IP is slower than a direct USB connection. Keep the resolution and frame rate low (640x480 at 30 fps, like in `config/realsense_params.yaml`), keep the point cloud off, and make sure the camera is on a USB 3 port. `rs-enumerate-devices` should show the USB type as `3.2`. If it says `2.1`, try another port or cable.
+- **"Frames didn't arrive within 5 seconds" or "Incomplete video frame detected" or dropped frames.** USB/IP is slower than a direct USB connection. Keep the resolution and frame rate low (640x480 at 30 fps, like in `config/realsense_params.yaml`), keep the point cloud off, and make sure the camera is on a USB 3 port. `rs-enumerate-devices` should show the USB type as `3.2`. If it says `2.1`, try another port or cable. If it still doesn't work, try to lower the resolution by half.
 
 - **Sharing on public Wi-Fi.** While a device is shared, other computers on the network may be able to attach it. On Windows, run `usbipd unbind --busid <BUSID>` when you're finished. On Mac, stop the server with `Ctrl+C`.
