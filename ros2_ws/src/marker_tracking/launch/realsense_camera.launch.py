@@ -9,8 +9,9 @@ from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-    #pkg_dir = get_package_share_directory('marker_tracking')
-    #realsense_config = os.path.join(pkg_dir, 'config', 'realsense_params.yaml')
+    # Uncommented to load the config
+    pkg_dir = get_package_share_directory('marker_tracking')
+    realsense_config = os.path.join(pkg_dir, 'config', 'realsense_params.yaml')
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -31,8 +32,11 @@ def generate_launch_description():
                 '/launch/rs_launch.py',
             ]),
             launch_arguments={
-                'align_depth.enable': 'true',
-                'pointcloud.enable': 'false',
+                # 'align_depth.enable': 'true',
+                # 'pointcloud.enable': 'false',
+                
+                # Load the realsense camera config
+                'config_file': realsense_config,
                 'serial_no': LaunchConfiguration('camera_serial_no'),
             }.items(),
             condition=IfCondition(LaunchConfiguration('enable_camera')),
