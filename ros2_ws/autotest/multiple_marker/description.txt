@@ -1,0 +1,5 @@
+Left: ID 1
+Right: ID 0
+
+Distance from leftmost left marker to rightmost right marker: 38.5 cm
+Measured from the black borders

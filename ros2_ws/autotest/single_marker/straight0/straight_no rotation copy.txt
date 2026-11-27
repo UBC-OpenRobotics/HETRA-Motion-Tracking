@@ -1,0 +1,6 @@
+Marker size: 14.5 x 14.5 cm
+From leftmost paper to end of frame: 4.8 cm
+From rightmost paper to end of frame: 3.2 cm
+
+Distance from marker to camera: 19.9 - 22.4 cm
+Horizontal distance: 0.8 cm too much to the right

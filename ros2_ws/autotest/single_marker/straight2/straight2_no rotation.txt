@@ -1,0 +1,7 @@
+Marker size: 14.5 x 14.5 cm
+From top marker to out of frame: 3.1  (Approximated)
+From bottom marker to out of frame: 7.2 cm (Approximated)
+
+Distance from marker to camera: 30.5 - 33 cm
+0 cm horizontal shift
+2.05 cm too much to the top
