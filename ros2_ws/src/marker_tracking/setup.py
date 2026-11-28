@@ -28,6 +28,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'aruco_publisher = marker_tracking.realsense.aruco_ros_publisher:main',
         ],
     },
 )

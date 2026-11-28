@@ -8,12 +8,13 @@
 
 # Use this one instead if image isn't sent because of limited bandwidth
 rgb_camera.color_profile: 424x240x30
-
-depth_module.depth_profile: 640x480x30
+#depth_module.depth_profile: 640x480x30
 
 enable_color: true
+
 enable_depth: false
 enable_sync: false
-
 align_depth.enable: false
 pointcloud.enable: false
+
+initial_reset: true #resets the camera on startup, clears a stuck USB state from the previous run

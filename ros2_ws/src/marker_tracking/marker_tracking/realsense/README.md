@@ -9,7 +9,7 @@ This project receives color images and frame metadata from a RealSense D435 in R
 
 Both Python files must be in the **same directory**. Normally run **only** `aruco_ros_publisher.py`, which imports the subscriber class.
 
-## Requirements
+## Requirements (all added in package.xml)
 
 - ROS 2 Humble with `rclpy`, `sensor_msgs`, `std_msgs`, and `cv_bridge`
 - RealSense ROS driver and `realsense2_camera_msgs` package
@@ -20,56 +20,56 @@ A Docker GUI/X display is only needed when `show_preview` is enabled. Detection 
 
 ## Run
 
-In terminal 1 (launch RealSense, if your driver provides this launch file):
+1. In (ROS) terminal 1, launch the RealSense driver:
 
-```bash
-source /opt/ros/humble/setup.bash
-ros2 launch realsense2_camera rs_launch.py
-```
+    ```bash
+    cd ~/ros2_ws
+    ros2 launch marker_tracking realsense_camera.launch.py
+    ```
 
-Check for the relevant topics:
+    Check for the relevant topics in another terminal if needed:
 
-```bash
-ros2 topic list
-```
+    ```bash
+    ros2 topic list
+    ```
 
-By default, the code expects:
+    By default, the code expects:
 
-- `/camera/camera/color/image_raw`
-- `/camera/camera/color/metadata`
-- `/camera/camera/depth/image_rect_raw` and `/camera/camera/depth/metadata` (optional; enabled by default)
+    - `/camera/camera/color/image_raw`
+    - `/camera/camera/color/metadata`
+    - `/camera/camera/depth/image_rect_raw` and `/camera/camera/depth/metadata` (optional; enabled by default)
 
-In terminal 2, from the folder containing the two Python files:
+2. In terminal 2, run the aruco publisher:
 
-```bash
-source /opt/ros/humble/setup.bash
-python3 aruco_ros_publisher.py
-```
+    ```bash
+    cd ~/ros2_ws
+    ros2 run marker_tracking aruco_publisher
+    ```
 
-In terminal 3, inspect the detections:
+3. In terminal 3, echo to see the detections:
 
-```bash
-source /opt/ros/humble/setup.bash
-ros2 topic echo /aruco/detections
-```
+    ```bash
+    cd ~/ros2_ws
+    ros2 topic echo /aruco/detections
+    ```
 
-To enable the OpenCV preview window (press `q` to exit):
+4. (Optional) To enable the OpenCV preview window (press `q` to exit):
 
-```bash
-python3 aruco_ros_publisher.py --ros-args -p show_preview:=true
-```
+    ```bash
+    python3 aruco_ros_publisher.py --ros-args -p show_preview:=true
+    ```
 
-To disable depth subscriptions when only using the color camera:
+    To disable depth subscriptions when only using the color camera:
 
-```bash
-python3 aruco_ros_publisher.py --ros-args -p subscribe_depth:=false
-```
+    ```bash
+    python3 aruco_ros_publisher.py --ros-args -p subscribe_depth:=false
+    ```
 
-If your camera is launched under a different prefix:
+    If your camera is launched under a different prefix:
 
-```bash
-python3 aruco_ros_publisher.py --ros-args -p camera_prefix:=/camera/camera
-```
+    ```bash
+    python3 aruco_ros_publisher.py --ros-args -p camera_prefix:=/camera/camera
+    ```
 
 ## Published topic and message format
 
