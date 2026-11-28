@@ -1,7 +1,5 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <micro_ros_platformio.h>
-#include <rcl/rcl.h>
 
 const uint8_t ADDR = 0x68;   // AD0 tied to GND
 
@@ -14,7 +12,6 @@ void writeReg(uint8_t reg, uint8_t val) {
 
 void setup() {
   Serial.begin(115200);
-  set_microros_serial_transport(Serial);
   delay(3000);               // gives you time to open the monitor
   Wire.begin(21, 22);        // SDA, SCL
   Wire.setClock(100000);
