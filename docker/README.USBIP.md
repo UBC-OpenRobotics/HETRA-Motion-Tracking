@@ -35,15 +35,13 @@ To connect the camera, we need the **USB/IP server** that shares the camera over
    usbipd attach --wsl --busid 2-3 --auto-attach
    ```
    **Leave this window open.** `--auto-attach` re-attaches the camera whenever it disconnects, which RealSense cameras do when the driver starts. `usbipd list` should now say `Attached`.
-3. Start the container, or restart it if it was already running:
+3. If you already have a running container, stop it first. If not, continue to step 4.
+4. Start the container.
    ```powershell
    docker compose up -d
    ```
-   or
-   ```
-   docker compose restart ros
-   ```
-4. Go to [Check and run the camera](#check-and-run-the-camera).
+   NOTE: simply running `docker compose restart ros` does NOT work. That's why you need to do step 3 if you already have a running container.
+5. Go to [Check and run the camera](#check-and-run-the-camera).
 
 When you're done working with the camera, press `Ctrl+C` in the attach window and run `usbipd detach --busid 2-3`.
 
