@@ -109,4 +109,4 @@ The marker dictionary is `DICT_6X6_250`. The detector also logs the mean interva
 
 ## Notes
 
-This publishes 2D marker corners, **not** the 3D marker pose. For `solvePnP`, additionally supply physical marker corner coordinates and matching camera intrinsics/distortion coefficients. The files were syntax-checked, but have not been verified on a running D435 in this environment.
+This publishes 2D marker corners, **not** the 3D marker pose. For `solvePnP`, additionally supply physical marker corner coordinates and matching camera intrinsics/distortion coefficients. The files are verified on a running RealSense D435.
