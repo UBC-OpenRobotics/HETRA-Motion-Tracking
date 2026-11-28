@@ -31,7 +31,7 @@ class CameraSubscriber(Node):
         self.pending_metadata = {'color': OrderedDict(), 'depth': OrderedDict()}
         self.latest_matched = {'color': None, 'depth': None}
         self.frame_counts = {'color': 0, 'depth': 0}
-        self.subscriptions = []
+        self.subs = [] # previously self.subscriptions[] -> ros2 node defines this as a read only attribute so we can't reassign
 
         streams = ['color'] + (['depth'] if subscribe_depth else [])
         for stream in streams:
@@ -41,11 +41,11 @@ class CameraSubscriber(Node):
             )
             metadata_topic = f'{prefix}/{stream}/metadata'
 
-            self.subscriptions.append(self.create_subscription(
+            self.subs.append(self.create_subscription(
                 Image, image_topic, partial(self.image_callback, stream=stream),
                 qos_profile_sensor_data
             ))
-            self.subscriptions.append(self.create_subscription(
+            self.subs.append(self.create_subscription(
                 Metadata, metadata_topic,
                 partial(self.metadata_callback, stream=stream),
                 qos_profile_sensor_data

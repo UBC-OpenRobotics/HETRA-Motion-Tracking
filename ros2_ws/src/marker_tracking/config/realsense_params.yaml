@@ -1,0 +1,20 @@
+# Changed to following the realsense formatting
+# https://github.com/realsenseai/realsense-ros
+
+# -- Resolution and Frame Rate --
+
+# Using the one below often causes incomplete/corrupted frames because of limited bandwidth
+#rgb_camera.color_profile: 848x480x30
+
+# Use this one instead if image isn't sent because of limited bandwidth
+rgb_camera.color_profile: 424x240x30
+#depth_module.depth_profile: 640x480x30
+
+enable_color: true
+
+enable_depth: false
+enable_sync: false
+align_depth.enable: false
+pointcloud.enable: false
+
+initial_reset: true #resets the camera on startup, clears a stuck USB state from the previous run

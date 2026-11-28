@@ -1,6 +1,6 @@
 
 #!/usr/bin/env python3
-"""ROS 2 ArUco detection publisher."""
+"""Detect ArUco markers from usb_cam and publish corners, IDs and timestamps."""
 
 import json
 
@@ -9,30 +9,24 @@ import rclpy
 from rclpy.executors import ExternalShutdownException
 from std_msgs.msg import String
 
-from realsense_frame_subscriber import CameraSubscriber
+from marker_tracking.usb_cam.usb_webcam_subscriber import WebcamSubscriber
 
 
-class ArucoPublisher(CameraSubscriber):
+class UsbArucoPublisher(WebcamSubscriber):
     def __init__(self):
-        # Parent subscribes to RealSense images and metadata.
         super().__init__()
 
-        self.declare_parameter('show_preview', False)
         self.declare_parameter('detections_topic', '/aruco/detections')
+        self.declare_parameter('show_preview', False)
 
-        self.show_preview = bool(
-            self.get_parameter('show_preview').value
-        )
+        topic = str(self.get_parameter('detections_topic').value)
+        self.show_preview = bool(self.get_parameter('show_preview').value)
 
-        topic = str(
-            self.get_parameter('detections_topic').value
-        )
-
-        self.publisher = self.create_publisher(
+        self.detection_publisher = self.create_publisher(
             String, topic, 10
         )
 
-        # ArUco detector (compatible with old and new OpenCV)
+        # Support both old and new OpenCV ArUco APIs.
         self.dictionary = cv2.aruco.getPredefinedDictionary(
             cv2.aruco.DICT_6X6_250
         )
@@ -50,62 +44,42 @@ class ArucoPublisher(CameraSubscriber):
         else:
             self.detector = None
 
-        self.total_interval_ms = 0.0
+        self.previous_timestamp_ns = None
+        self.interval_total_ms = 0.0
         self.interval_count = 0
-        self.prev_timestamp_ns = None
 
-        self.get_logger().info(
-            f'Publishing ArUco detections on {topic}'
-        )
+        self.get_logger().info(f'Publishing detections on {topic}')
 
-    def handle_matched_frame(self, stream, image_record, metadata):
-        # Maintain parent subscriber bookkeeping.
-        super().handle_matched_frame(
-            stream, image_record, metadata
-        )
-
-        if stream != 'color':
-            return
-
-        record = self.latest_matched['color']
+    def handle_frame(self, record):
         frame = record['image']
-        encoding = record['encoding'].lower()
+
+        # Handle image encodings supported by the subscriber.
+        encoding = record.get('encoding', 'bgr8').lower()
 
         if encoding == 'rgb8':
-            gray = cv2.cvtColor(
-                frame, cv2.COLOR_RGB2GRAY
-            )
-            display_frame = (
+            gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+            display = (
                 cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
                 if self.show_preview else None
             )
-
         elif encoding == 'bgr8':
-            gray = cv2.cvtColor(
-                frame, cv2.COLOR_BGR2GRAY
-            )
-            display_frame = (
-                frame.copy() if self.show_preview else None
-            )
-
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            display = frame.copy() if self.show_preview else None
         elif encoding == 'mono8':
             gray = frame
-            display_frame = (
+            display = (
                 cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
                 if self.show_preview else None
             )
-
         else:
             self.get_logger().warning(
-                f'Unsupported color encoding: {encoding}'
+                f'Unsupported image encoding: {encoding}'
             )
             return
 
-        # Detect markers using the installed OpenCV API.
+        # Detect using the API available in this OpenCV version.
         if self.detector is not None:
-            corners, ids, _ = self.detector.detectMarkers(
-                gray
-            )
+            corners, ids, _ = self.detector.detectMarkers(gray)
         else:
             corners, ids, _ = cv2.aruco.detectMarkers(
                 gray,
@@ -126,55 +100,52 @@ class ArucoPublisher(CameraSubscriber):
                     ).astype(float).tolist()
                 })
 
-        # Timestamp belongs to the captured image.
-        stamp_ns = int(record['ros_timestamp_ns'])
+        # Timestamp from the original ROS image header.
+        timestamp_ns = int(record['ros_timestamp_ns'])
 
-        output = {
-            'ros_timestamp_ns': stamp_ns,
-            'ros_timestamp_sec': stamp_ns / 1e9,
-            'camera_timestamp_ms': record.get(
-                'camera_timestamp_ms'
-            ),
+        message = {
+            'ros_timestamp_ns': timestamp_ns,
+            'ros_timestamp_sec': timestamp_ns / 1e9,
+            'camera_timestamp_ms': None,
             'frame_id': record['frame_id'],
             'markers': markers
         }
 
-        msg = String()
-        msg.data = json.dumps(output)
-        self.publisher.publish(msg)
+        ros_msg = String()
+        ros_msg.data = json.dumps(message)
+        self.detection_publisher.publish(ros_msg)
 
-        # Calculate average frame interval.
-        if self.prev_timestamp_ns is not None:
-            self.total_interval_ms += (
-                stamp_ns - self.prev_timestamp_ns
+        # Compute average image timestamp interval.
+        if self.previous_timestamp_ns is not None:
+            interval_ms = (
+                timestamp_ns - self.previous_timestamp_ns
             ) / 1e6
 
+            self.interval_total_ms += interval_ms
             self.interval_count += 1
 
-        self.prev_timestamp_ns = stamp_ns
+        self.previous_timestamp_ns = timestamp_ns
 
         if self.interval_count >= 100:
             self.get_logger().info(
-                'Average color frame timestamp interval: '
-                f'{self.total_interval_ms / self.interval_count:.3f} ms'
+                'Average image timestamp interval: '
+                f'{self.interval_total_ms / self.interval_count:.3f} ms'
             )
 
-            self.total_interval_ms = 0.0
+            self.interval_total_ms = 0.0
             self.interval_count = 0
 
-        # Optional camera preview.
+        # Optional annotated preview.
         if self.show_preview:
             if ids is not None:
                 cv2.aruco.drawDetectedMarkers(
-                    display_frame, corners, ids
+                    display, corners, ids
                 )
 
-            cv2.imshow('ArUco Detection', display_frame)
+            cv2.imshow('USB Webcam ArUco Detection', display)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                self.get_logger().info(
-                    'Preview quit requested; stopping ROS.'
-                )
+                self.get_logger().info('Preview quit requested.')
                 if rclpy.ok():
                     rclpy.shutdown()
 
@@ -184,7 +155,7 @@ def main(args=None):
     node = None
 
     try:
-        node = ArucoPublisher()
+        node = UsbArucoPublisher()
         rclpy.spin(node)
 
     except (KeyboardInterrupt, ExternalShutdownException):
