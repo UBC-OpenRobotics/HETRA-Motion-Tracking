@@ -17,6 +17,12 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     WS=/home/ros/ros2_ws
 
+# RealSense SDK + ROS wrapper
+RUN apt-get update && apt-get install -y \
+    ros-${ROS_DISTRO}-realsense2-camera \
+    ros-${ROS_DISTRO}-realsense2-description \
+    && rm -rf /var/lib/apt/lists/*
+
 # ---------------------------------------------------------------------------
 # ROS desktop tools (rviz2, rqt, demos like turtlesim) + general dev tools
 # ---------------------------------------------------------------------------
@@ -73,6 +79,7 @@ WORKDIR ${WS}
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/ros/.bashrc \
     && echo "[ -f ${WS}/install/setup.bash ] && source ${WS}/install/setup.bash" >> /home/ros/.bashrc \
     && echo "[ -f /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash ] && source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash" >> /home/ros/.bashrc
+
 
 # Cache rosdep's index so `rosdep install` works later. Not critical if it fails.
 RUN rosdep update --rosdistro ${ROS_DISTRO} || true
